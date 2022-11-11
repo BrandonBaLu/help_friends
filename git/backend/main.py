@@ -36,7 +36,7 @@ app.add_middleware(
 security = HTTPBasic()
 security_bearer = HTTPBearer()
 
-class Usuario(BaseModel):
+class Usuario1(BaseModel):
     nombre: str
     apellidoP: str
     apellidoM: str
@@ -47,6 +47,20 @@ class Usuario(BaseModel):
     correo: str
     contrasena: str
     tipo: int
+
+class Usuario (BaseModel):  
+    iduser: int  
+    username: str  
+    apellidoP: str
+    apellidoM: str
+    sexo: str
+    edad: int
+    domicilio :str
+    telefono: str
+    email: str
+    password : str
+    fkTipo: int
+
 
 class CatTipo(BaseModel):
     tipo: str
@@ -76,8 +90,8 @@ class Instancia(BaseModel):
     extension: str
     correo: str
 
-
-
+class Respuesta (BaseModel) :  
+    message: str  
 
 
 @app.get("/")
@@ -91,8 +105,9 @@ def root():
     status_code=status.HTTP_202_ACCEPTED,
     summary     ="Inserta un usuario",
     description ="Inserta un usuario",
+    tags=["User"]
 )
-def inserta_usuario(usuario: Usuario):
+def inserta_usuario(usuario: Usuario1):
     try:
         conn = sqlite3.connect(DATABASE_URL)
         cursor = conn.cursor()
@@ -108,14 +123,17 @@ def inserta_usuario(usuario: Usuario):
 #obtiene todos los usuarios
 
 @app.get(
-    "/usuario",
-    status_code=status.HTTP_200_OK,
+    "/usuario",    response_model=List[Usuario],
+    status_code=status.HTTP_202_ACCEPTED,
     summary     ="Obtiene todos los usuarios",
     description ="Obtiene todos los usuarios",
+    tags=["User"]
+
 )
 def get_usuarios():
     try:
-        conn = sqlite3.connect(DATABASE_URL)
+        conn = sqlite3.connect(DATABASE_URL) 
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM usuarios")
         usuarios = cursor.fetchall()
@@ -124,25 +142,36 @@ def get_usuarios():
     except:
         return {"message": "Error al obtener los usuarios"}
 
-#obtiene un usuario por id
+#login
 
-@app.get(
-    "/usuario/{id}",
+@app.post(
+    "/login",
     status_code=status.HTTP_200_OK,
-    summary     ="Obtiene un usuario por id",
-    description ="Obtiene un usuario por id",
+    summary     ="Login",
+    description ="Login",
+    tags=["User"]
 )
-def get_usuario(id: int):
+def login(credentials: HTTPBasicCredentials = Depends(security)):
     try:
         conn = sqlite3.connect(DATABASE_URL)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM usuarios WHERE iduser = ?", (id,))
+        cursor.execute("SELECT * FROM usuarios WHERE email = ? AND password = ?", (credentials.username, credentials.password))
         usuario = cursor.fetchone()
-        conn.close()
-        return usuario
+
+        if usuario != None:
+            return {"message": "Login correcto"}
+        
     except Exception as e:
         print(e)
-        return {"message": "Error al obtener el usuario"}
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales incorrectas",
+        headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+
 
 #actualiza un usuario
 
@@ -151,12 +180,13 @@ def get_usuario(id: int):
     status_code=status.HTTP_202_ACCEPTED,
     summary     ="Actualiza un usuario",
     description ="Actualiza un usuario",
+    tags=["User"]
 )
-def update_usuario(id: int, usuario: Usuario):
+def update_usuario(usuario: Usuario):
     try:
         conn = sqlite3.connect(DATABASE_URL)
         cursor = conn.cursor()
-        cursor.execute("UPDATE usuarios SET username = ?, apellidoP = ?, apellidoM = ?, sexo = ?, edad = ?, domicilio = ?, telefono = ?, email = ?, password = ?, fkTipo = ? WHERE iduser = ?", (usuario.nombre, usuario.apellidoP, usuario.apellidoM, usuario.sexo, usuario.edad, usuario.domicilio, usuario.telefono, usuario.correo, usuario.contrasena, usuario.tipo, id))
+        cursor.execute("UPDATE usuarios SET username = ?, apellidoP = ?, apellidoM = ?, sexo = ?, edad = ?, domicilio = ?, telefono = ?, email = ?, password = ?, fkTipo = ? WHERE email = ?", (usuario.username, usuario.apellidoP, usuario.apellidoM, usuario.sexo, usuario.edad, usuario.domicilio, usuario.telefono, usuario.email, usuario.password, usuario.fkTipo, usuario.email))
         conn.commit()
         conn.close()
         return {"message": "Usuario actualizado"}
@@ -165,14 +195,8 @@ def update_usuario(id: int, usuario: Usuario):
         return {"message": "Error al actualizar el usuario"}
 
 #elimina un usuario
-"""
-@app.delete(
-    "/usuario/{id}",
-    status_code=status.HTTP_202_ACCEPTED,
-    summary     ="Elimina un usuario",
-    description ="Elimina un usuario",
-)
-def delete_usuario(id: int):"""
+@app.delete("usuario/{id}",response_model=Respuesta,status_code=status.HTTP_202_ACCEPTED,
+summary="Elimina un usuario",description="Elimina un usuario", tags=["TypeUser"])
 
 #Inserta una denuncia
 
@@ -353,4 +377,3 @@ def get_instancia(id: int):
     except Exception as e:
         print(e)
         return {"message": "Error al obtener la instancia"}
-        

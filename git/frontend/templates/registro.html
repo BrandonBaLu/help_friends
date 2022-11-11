@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+    <header>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Registro</title>
+        <link rel="stylesheet" type="text/css" href="../css/sweetalert2.min.css" media="screen"/>
+        <script type="text/javascript" src="../js/sweetalert2.all.min.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     
+        <style>
+            body{
+                
+                margin: 175px;
+                background-image: linear-gradient(to bottom, #cc3399, #000);
+                font: Century Gothic;  
+                color: #fff; 
+                font-size: 20px;
+            }
+            
+        
+            .reg input{
+                
+                position : center;
+                box-sizing: border-box;
+                width: 10cm;
+                height: 10px;
+                padding: 12px 16px;
+                margin-top:15px;
+                border-radius:20px;
+                color: black;
+                font-family: Century Gothic;
+            }
+
+            .reg button{
+                
+                width: 10cm;
+                padding: 8px 16px;
+                margin-top:32px;
+                border-radius: 5px;
+                display:block;
+                color:#fff;
+                background: #000;
+                border-radius: 12cm;
+            }
+
+            .class{
+                display: flex;
+            }
+
+        </style>
+    </header>
+    
+    <body>
+        <center>
+            <img class="adm" style="height:250px;" src="../imagenes/HAMesa de trabajo 1HACKATHON sn fondo .png" alt="admnistrador">
+            <div>
+            <h1>Registro/Creación de cuenta.</h1>
+            <br>
+            <form class="reg" method="post" text-align="center">
+                <input type="text" name="nombre" placeholder="Nombre" required>
+                <input type="text" name="apellidop" placeholder="Apellido paterno" required>
+                <input type="text" name="apellidom" placeholder="Apellido materno" required>
+                <input type="number" name="edad" placeholder="Edad" required>
+                <input type="text" name="sexo" placeholder="Sexo" required>
+                <input type="text" name="domicilio" placeholder="Domicilio" required>
+                <input type="text" name="email" placeholder="Correo" required>
+                <input type="password" name="contrasena" placeholder="Contraseña" required>
+                
+                <input type="email" name="correo" placeholder="Correo" required>
+                <input type="text" name="telefono" placeholder="Telefono" required>
+
+                <button class="button" type="button">REGISTRARSE</button>
+            </form>
+            </div>
+        </center>
+            </form>
+        </div>
+    </body>
+</html>
